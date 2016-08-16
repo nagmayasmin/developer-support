@@ -1,0 +1,1 @@
+The sample shows how to set transparency of a renderered polygon.
