@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no"/>
+        <title>Elevation Profile: Create Features</title>
+        <link rel="stylesheet" href="https://js.arcgis.com/3.16/dijit/themes/claro/claro.css">
+        <link rel="stylesheet" href="https://js.arcgis.com/3.16/esri/css/esri.css">
+        <script>var dojoConfig = { parseOnLoad: true };</script>
+        <script src="https://js.arcgis.com/3.16/"></script>
+        <style>
+            html, body {
+                height: 100%;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }        
+            label {
+                font-family: arial;
+                color: white;
+                font-size: 14px;   
+                display: block; 
+                padding-bottom: 5px;     
+            }
+            select {
+                display: block;
+            }
+            #info {
+                min-height: 100px;
+                min-width: 200px;
+                right: 5px;
+                top: 5px;
+                margin: 5px;
+                padding: 10px;
+                position: absolute;
+                width: 10%;
+                z-index: 40;
+                border: solid 2px #666;
+                border-radius: 4px;
+                background-color: #666;
+            } 
+            #map {
+                padding: 0px;
+            }           
+        </style>
+        <script>
+            require([           
+                "esri/map", 
+                "esri/toolbars/draw",
+                "esri/symbols/SimpleLineSymbol",
+                "esri/symbols/CartographicLineSymbol",
+				"esri/layers/FeatureLayer",
+				"esri/tasks/query", 
+				 "esri/tasks/QueryTask",
+                "esri/graphic", 
+                "esri/units",
+                "esri/dijit/ElevationProfile",
+                "esri/Color",
+                "dojo/dom", 
+                "dojo/on",     
+                "dojo/domReady!"
+            ], function(
+                Map, 
+                Draw,
+                SimpleLineSymbol,
+                CartographicLineSymbol,
+				FeatureLayer,
+				Query,
+				QueryTask,
+                Graphic, 
+                Units,
+                ElevationsProfileWidget,
+                Color, 
+                dom, 
+                on
+                ) {                
+                var tb, epWidget, lineSymbol;
+				var featureLayer, query ;
+				var geom;
+				
+				
+                var map = new Map("map", {
+                    basemap: "topo",
+                    center: [6.704, 47.068],
+                    zoom: 15
+                });
+                map.on("load", init);
+
+                function init() {
+                  
+               			   
+				   var geom ;
+					
+					featureLayer = new FeatureLayer("http://nagma.esri.com/arcgis/rest/services/Elevation_Feature/MapServer/0") ;
+					map.addLayer(featureLayer) ;
+					
+								
+					 var profileParams = {
+                        map: map,
+                        profileTaskUrl: "https://elevation.arcgis.com/arcgis/rest/services/Tools/ElevationSync/GPServer",
+                        scalebarUnits: Units.MILES
+                    };
+
+					
+					epWidget = new ElevationsProfileWidget(profileParams, dom.byId("profileChartNode"));
+					
+					featureLayer.on("click", function(evt){
+					  geom = evt.graphic.geometry ;
+					  profileParams.profileGeometry = geom ;
+					
+					 epWidget.set("profileGeometry", geom);
+					 epWidget.measureUnits =  "esriMiles" ;
+					 
+					 alert("Move the elevation Profile bar") ;
+					 
+					
+					}) ;
+					
+					epWidget.startup();
+                }
+
+                
+            })
+        </script>
+    </head>
+    <body class="claro">       
+           <div id="mainContainer" data-dojo-type="dijit/layout/BorderContainer" data-dojo-props="design:'headline', gutters:true" style="width:100%;height:100%">
+            <div id="map" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'center'" style="height:100%"></div>
+            <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="region:'bottom'" style="background-color: #666;">                              
+                <div id="profileChartNode"></div>
+            </div>
+        </div>           
+    </body>    
+</html>

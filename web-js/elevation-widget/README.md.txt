@@ -1,0 +1,1 @@
+The sample shows how to use the elevation widget witha  feature layer.
