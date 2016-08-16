@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=10" />
+		<title>Sample ArcGis FeatureLayer</title>
+		<link rel="stylesheet" type="text/css" href="http://js.arcgis.com/3.12/esri/css/esri.css" />
+		<style>
+			html, body {height: 100%; width: 100%; margin: 0; padding: 0;}
+			body{background-color: #fff; overflow:hidden; font-family: sans-serif;}
+			#map {width: 100%;height: 100%;}
+		</style>
+		<script src="http://js.arcgis.com/3.12/"></script>
+		<script>
+		 var map;
+		 
+		 require([
+			 "esri/map",
+			 "esri/geometry/Extent", 
+			 "dojo/dom",
+			 "dojo/on",
+			 "dojo/ready",
+			 "esri/SpatialReference",
+			 "esri/layers/QueryDataSource",
+			 "esri/layers/LayerDataSource",
+			 "esri/layers/DynamicLayerInfo",
+			 "esri/layers/LayerDrawingOptions",
+			 "esri/layers/FeatureLayer",
+			 "esri/layers/ArcGISDynamicMapServiceLayer",
+			 "esri/renderers/UniqueValueRenderer",
+			 "esri/symbols/SimpleLineSymbol", "esri/renderers/SimpleRenderer", "esri/Color",
+			 "dojo/domReady!"
+		], function (Map, Extent, dom, on, ready, SpatialReference, QueryDataSource, LayerDataSource, DynamicLayerInfo, LayerDrawingOptions, FeatureLayer, ArcGISDynamicMapServiceLayer, UniqueValueRenderer, SimpleLineSymbol, SimpleRenderer, Color) {
+		
+		ready(function(){
+
+         
+		 // Query Table Data Source
+		 // http://resources.arcgis.com/en/help/arcgis-rest-api/index.html#//02r30000019q000000#ESRI_SECTION1_5FA60C9F75BE4A64983203545BA46C20
+		 
+                var map = new Map("map", {
+					logo: false,
+					displayGraphicsOnPan: true,
+					fadeOnZoom: true,
+					nav: true,
+					slider: false,
+					zoom: 3,
+					basemap: "dark-gray",
+					extent: new Extent({xmin: -10349730,
+										ymin: 3871622,
+										xmax: -8642421,
+										ymax: 5066738, 
+										spatialReference: {wkid: 3857}})
+				});
+               
+                
+				 var testLayer = new ArcGISDynamicMapServiceLayer("http://nagma.esri.com/arcgis/rest/services/QueryDataService/MapServer", {id:0}) ;
+				
+
+				var symbol = new SimpleLineSymbol(
+                             SimpleLineSymbol.STYLE_DASH,
+                                            new Color([255,0,0]), 3);
+				
+				 var newlinesymbol = new SimpleLineSymbol(symbol);
+                 var renderer = new SimpleRenderer(newlinesymbol);
+                
+			     var optionsArray = [];
+			   
+				 var drawingOptions = new LayerDrawingOptions();
+                 drawingOptions.layerId = 0;
+                 drawingOptions.renderer = renderer;
+				 
+				//// set the drawing options for the relevant layer
+			    // optionsArray index corresponds to layer index in the map service
+				
+				optionsArray[0] = drawingOptions;
+								
+				
+				var dataSource = new QueryDataSource({
+					workspaceId: "MyDatabaseWorkspaceID",
+                    geometryType: "esriGeometryPolyline",
+                    oidFields: ["nagma.SDE.trafficSegment.OBJECTID_1"],
+                    spatialReference: new SpatialReference({ wkid: 26915 }),
+		            query :"SELECT * FROM nagma.SDE.trafficSegment where OBJECTID = 626"
+                    
+				});
+ 
+						
+				var layerDataSource = new LayerDataSource({
+                    dataSource: dataSource
+                });
+				
+				
+			 			
+				var dynamicLayerInfos = [];
+				var dynamicLayerInfo = new DynamicLayerInfo();
+           		   
+			    dynamicLayerInfo.id = 0;
+                dynamicLayerInfo.source = layerDataSource;
+				dynamicLayerInfos.push(dynamicLayerInfo);
+				
+						
+                testLayer.setDynamicLayerInfos(dynamicLayerInfos, true);
+				testLayer.setLayerDrawingOptions(optionsArray);
+						
+      
+              map.addLayer(testLayer);	
+				
+						
+            });
+        });
+		</script>
+	</head>
+	<body>
+		<div id="map"></div>
+	</body>
+</html>
