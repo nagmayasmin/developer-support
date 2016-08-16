@@ -1,0 +1,1 @@
+The lines of code shows how to retirve the field info using File Geodatabase API.

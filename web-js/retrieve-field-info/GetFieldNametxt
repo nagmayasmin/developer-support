@@ -1,0 +1,15 @@
+ try
+      {
+        // Open the geodatabase.
+        Geodatabase geodatabase = Geodatabase.Open("../../Samples/data/Querying.gdb");
+
+        // Open the Cities table.
+        Table table = geodatabase.OpenTable("Cities");
+        var t = table.FieldInformation ;
+      
+         Console.WriteLine("Field Name: " + t.GetFieldName(3));
+        Console.WriteLine("Field Type: " + t.GetFieldType(3));
+        Console.WriteLine("Field Length: " + t.GetFieldLength(3));
+        Console.WriteLine("Is Field Nullable: "+ t.GetFieldIsNullable(3));
+        Console.WriteLine("Total Field Count: " + t.Count);
+}
