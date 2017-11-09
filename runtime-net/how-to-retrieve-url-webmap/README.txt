@@ -1,0 +1,1 @@
+This sample demonstrates how to retreieve the feature service url from a webmap
